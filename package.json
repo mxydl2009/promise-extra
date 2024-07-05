@@ -8,7 +8,7 @@
     "docs": "jsdoc -c jsdocConfig.json",
     "live": "live-server docs --watch docs",
     "preview": "npm run docs && npm run live",
-    "watch": "nodemon --watch ./lib --exec \"npm run docs\" & npm run live",
+    "watch": "nodemon --watch ./src --exec \"npm run docs\" & npm run live",
     "build": "rollup -c rollup.config.mjs",
     "docs:md": "jsdoc2md src/*.js > README.md",
     "dev": "vite",
