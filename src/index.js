@@ -80,4 +80,6 @@ function promiseAllLimited(promises, limited = 6) {
   });
 }
 
-export default promiseAllLimited;
+module.exports = {
+  promiseAllLimited,
+};
