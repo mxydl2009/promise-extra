@@ -7,63 +7,71 @@
  * ## PromiseAllLimited
  * ### description
  * English
- * 
- * like Promise.all, but limited the number of the concurrent promises. 
- * 
+ *
+ * like Promise.all, but limited the number of the concurrent promises.
+ *
  * When one promise resolved, then take the next pendingPromise unless reach the limited number again.
- * 
+ *
  * When all the pending promises resolved, the return promise is resolved with result corresponding to the pending promises like Promise.all.
- * 
+ *
  * the result contains the rejected value(mostly Error) when the corresponding pending promise was rejected.
- * 
+ *
  * Chinese
- * 
+ *
  * 类似于Promise.all方法，但是会限制并发的promise数量。
- * 
+ *
  * 每当其中一个promise 被resolve后，接着取下一个pending promise，直到再次达到限制数。
- * 
+ *
  * 所有的pending promises都resolve后（或者其中有reject），返回带着result的promise，result的元素顺序与pending promise是一一对应的，其中可能包含Error（当对应的promise被reject）。
- * 
+ *
  * ### example
  * ```js
-    function test(limited) {
-      const arr = [];
-      const intervals = [];
-      for (let index = 0; index < 6; index++) {
-        const interval = (Math.random() * 1.8).toFixed(3) * 1000;
-        intervals.push(interval);
-        arr[index] = new Promise((resolve, reject) => {
-          setTimeout(() => {
-            if (interval > 1000) {
-              reject(new Error(`${interval} is too large`));
-            }
-            resolve(interval);
-          }, interval);
-        });
-      }
-      promiseAllLimited(arr, 3)
-        .then((result) => {
-          console.log("result", result);
-          result.forEach((res, index) => {
-            console.log(res === intervals[index]); // true, except intervals[index] > 1000, then res is an instance of Error
-          })
-        });
-    }
+ * 
+ *  function taskFactory(name, interval) {
+ *    return new Promise(function (resolve) {
+ *     console.log(`task ${name} has started!`);
+ *       setTimeout(() => {
+ *         console.log("~~~~~~~~~", `task ${name} has finished!`);
+ *         resolve(`task-${name}`);
+ *       }, interval);
+ *     });
+ *   }
+ *
+ *   const taskIntervals = [];
+ *   for (let index = 0; index < 8; index++) {
+ *     const interval = Math.floor(Math.random() * 1800);
+ *     taskIntervals.push({
+ *       name: `${interval}`,
+ *       interval,
+ *     });
+ *   }
+
+ *   const limited = promiseAllLimited(3);
+
+ *   taskIntervals.forEach((item) =>
+ *     limited(() => taskFactory(item.name, item.interval))
+ *   );
+
+ *   limited.run().then((res) => {
+ *     console.log("result", res);
+ *   });
  * ```
- * @param {Array<Promise>} promises an array of pending promises
- * @param {number} [limited=6] limited number
- * @returns {Array<any>} an array of results which are resolved from pending promises
+ * 
+ * 
  */
-function promiseAllLimited(promises, limited = 6) {
-  promises.forEach((promise) => {
-    if (!promise instanceof Promise) {
-      throw new Error(`${promise} is not a instance of Promise`);
-    }
-  });
+/**
+ *
+ *
+ * @param {number} [limit=6] default concurrency
+ * @returns {undefined} (callback: () => Promise) => undefined
+ */
+function promiseAllLimited(limit = 6) {
   let pendingPromisesNum = 0;
+  let promiseIndex = 0;
   // 存储promise的执行结果
   const result = [];
-  const pendingPromises = [...promises];
+  const pendingPromises = [];
+
   function handler(res, index, resolve, reject) {
     result[index] = res;
     pendingPromisesNum--;
@@ -77,22 +85,39 @@ function promiseAllLimited(promises, limited = 6) {
       }
     }
     // 消费：取出pendingPromise成员进行消费
-    while (pendingPromisesNum < limited && pendingPromises.length > 0) {
-      const pendingPromise = pendingPromises.shift();
-      const index = promises.indexOf(pendingPromise);
+    while (pendingPromisesNum < limit && pendingPromises.length > 0) {
+      const pendingPromiseFn = pendingPromises.shift();
+      // const index = promises.indexOf(pendingPromise);
       pendingPromisesNum++;
-      pendingPromise
-        .then((res) => {
-          handler(res, index, resolve, reject);
-        })
-        .catch((e) => {
-          handler(e, index, resolve, reject);
-        });
+      const pendingPromise = pendingPromiseFn();
+      if (!(pendingPromise instanceof Promise)) {
+        throw new Error(`${pendingPromise} is not an instance of Promise`);
+      } else {
+        pendingPromise
+          .then((res) => {
+            handler(res, promiseIndex, resolve, reject);
+          })
+          .catch((e) => {
+            handler(e, promiseIndex, resolve, reject);
+          })
+          .finally(() => {
+            promiseIndex++;
+          });
+      }
     }
   }
-  return new Promise((resolve, reject) => {
-    exec(resolve, reject);
-  });
+
+  limited.run = function () {
+    return new Promise((resolve, reject) => {
+      exec(resolve, reject);
+    });
+  };
+
+  // fn为返回promise的函数
+  function limited(fn) {
+    pendingPromises.push(fn);
+  }
+  return limited;
 }
 
 export default promiseAllLimited;

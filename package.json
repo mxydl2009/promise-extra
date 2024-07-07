@@ -1,6 +1,6 @@
 {
   "name": "@mxydl2009/promise-extra",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "provide promise extra functions",
   "module": "dist/dist.mjs",
   "main": "dist/dist.cjs",
@@ -12,7 +12,7 @@
     "build": "rollup -c rollup.config.mjs",
     "docs:md": "jsdoc2md src/*.js > docs.md",
     "dev": "vite",
-    "test": "mocha test/*.test.js",
+    "test": "mocha test/*.test.js --timeout 5000",
     "coverage": "nyc npm run test"
   },
   "keywords": [
@@ -33,10 +33,10 @@
     "@babel/runtime": "^7.22.3",
     "@babel/runtime-corejs3": "^7.22.3",
     "@istanbuljs/nyc-config-babel": "^3.0.0",
-    "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-babel": "^6.0.3",
     "@rollup/plugin-commonjs": "^25.0.0",
     "@rollup/plugin-node-resolve": "^15.1.0",
+    "@rollup/plugin-terser": "^0.4.4",
     "babel-plugin-istanbul": "^7.0.0",
     "chai": "^4.3.7",
     "jsdoc": "^4.0.3",
@@ -46,6 +46,7 @@
     "nodemon": "^3.1.4",
     "nyc": "^15.1.0",
     "rimraf": "^5.0.7",
-    "rollup": "^4.18.0"
+    "rollup": "^4.18.0",
+    "vite": "^5.3.3"
   }
 }

@@ -1,6 +1,6 @@
 {
   "extends": "@istanbuljs/nyc-config-babel",
-  "include": ["src/index.js"],
+  "include": ["src/**/*.js"],
   "reporter": ["html", "text"],
   "sourceMap": false,
   "instrument": false,
