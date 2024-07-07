@@ -1,47 +1,71 @@
-<a name="module_PromiseAllLimited"></a>
+# Description
 
-## PromiseAllLimited
-PromiseAllLimited
+this package is aimed at providing extra promise related methods to simplify the code.
 
-<a name="module_PromiseAllLimited..promiseAllLimited"></a>
+# Usage
 
-### PromiseAllLimited~promiseAllLimited(promises, [limited]) ⇒ <code>Array.&lt;any&gt;</code>
-## 有着并发限制的PromiseAll方法
-### 功能描述
-给定一个数组`Array<Promise>`, 以及并发限制数，将数组中的并发请求一一执行，每执行完一个请求后，在未达到并发限制数时取下一个请求继续执行，一直到执行完所有请求.
-
-### 使用范例
 ```js
-    function test(num, limited) {
-      const arr = [];
-      const intervals = [];
-      // 创建一个Promise数组
-      for (let index = 0; index < num; index++) {
-        const interval = (Math.random() * (index + 0.3)).toFixed(3) * 1000;
-        intervals.push(interval);
-        arr[index] = new Promise((resolve, reject) => {
-          setTimeout(() => {
-            if (interval > (num + 0.1) * 500) {
-              reject(new Error(`${interval} is too large`));
-            }
-            resolve(interval);
-          }, interval);
-        });
-      }
-      // 消费
-      promiseAllLimited(arr, limited)
-        .then((result) => {
-          // result跟intervals的元素应该是一样的，包括顺序，如果promise响应有错误，错误对象被包装在result里
-          console.log("result", result);
-        });
-    }
+const { promiseAllLimited } = require("@mxydl2009/promise-extra"); // commonjs module
+
+import { promisedAllLimited } from "@mxydl2009/promise-extra"; // es module
 ```
 
-**Kind**: inner method of [<code>PromiseAllLimited</code>](#module_PromiseAllLimited)  
-**Returns**: <code>Array.&lt;any&gt;</code> - 响应的结果数组  
+# API
 
-| Param | Type | Default | Description |
-| --- | --- | --- | --- |
-| promises | <code>Array.&lt;Promise&gt;</code> |  | 待并发执行的Promise数组 |
-| [limited] | <code>number</code> | <code>6</code> | 并发限制数 |
+## promiseAllLimited(promises, [limited]) ⇒ <code>Array&lt;any&gt;</code>
 
+## PromiseAllLimited
+
+### description
+
+#### English
+
+like Promise.all, but limited the number of the concurrent promises.
+
+When one promise resolved, then take the next pendingPromise unless reach the limited number again.
+
+When all the pending promises resolved, the return promise is resolved with result corresponding to the pending promises like Promise.all.
+
+the result contains the rejected value(mostly Error) when the corresponding pending promise was rejected.
+
+#### Chinese
+
+类似于 Promise.all 方法，但是会限制并发的 promise 数量。
+
+每当其中一个 promise 被 resolve 后，接着取下一个 pending promise，直到再次达到限制数。
+
+所有的 pending promises 都 resolve 后（或者其中有 reject），返回带着 result 的 promise，result 的元素顺序与 pending promise 是一一对应的，其中可能包含 Error（当对应的 promise 被 reject）。
+
+### example
+
+```js
+function test(limited) {
+  const arr = [];
+  const intervals = [];
+  for (let index = 0; index < 6; index++) {
+    const interval = (Math.random() * 1.8).toFixed(3) * 1000;
+    intervals.push(interval);
+    arr[index] = new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (interval > 1000) {
+          reject(new Error(`${interval} is too large`));
+        }
+        resolve(interval);
+      }, interval);
+    });
+  }
+  promiseAllLimited(arr, 3).then((result) => {
+    console.log("result", result);
+    result.forEach((res, index) => {
+      console.log(res === intervals[index]); // true, except intervals[index] > 1000, then res is an instance of Error
+    });
+  });
+}
+```
+
+**Returns**: <code>Array&lt;any&gt;</code> - an array of results which are resolved from pending promises
+
+| Param     | Type                              | Default        | Description                  |
+| --------- | --------------------------------- | -------------- | ---------------------------- |
+| promises  | <code>Array&lt;Promise&gt;</code> |                | an array of pending promises |
+| [limited] | <code>number</code>               | <code>6</code> | limited number               |
