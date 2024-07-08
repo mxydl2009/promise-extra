@@ -1,6 +1,6 @@
 {
   "name": "@mxydl2009/promise-extra",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "provide promise extra functions",
   "module": "dist/dist.mjs",
   "main": "dist/dist.cjs",
@@ -9,7 +9,9 @@
     "live": "live-server docs --watch docs",
     "preview": "npm run docs && npm run live",
     "watch": "nodemon --watch ./src --exec \"npm run docs\" & npm run live",
-    "build": "rollup -c rollup.config.mjs",
+    "build:esm": "rollup -c rollup.config.esm.mjs",
+    "build:cjs": "rollup -c rollup.config.mjs",
+    "build": "npm run build:esm && npm run build:cjs",
     "docs:md": "jsdoc2md src/*.js > docs.md",
     "dev": "vite",
     "test": "mocha test/*.test.js --timeout 5000",

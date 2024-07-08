@@ -12,8 +12,8 @@ import babel from "@rollup/plugin-babel";
 export default {
   input: "src/index.js",
   output: {
-    file: "dist/dist.cjs",
-    format: "commonjs",
+    file: "dist/dist.mjs",
+    format: "es",
     banner: bannerInfo,
   },
   plugins: [
@@ -36,14 +36,13 @@ export default {
         [
           "@babel/preset-env",
           {
-            // 目标环境
-            targets: "node 12.0",
-            // 将ESM转换为cjs
+            targets: "> 0.25%, not dead",
+            // 不转换ESM
             modules: false,
           },
         ],
       ],
     }),
-    // terser(),
+    terser(),
   ],
 };
