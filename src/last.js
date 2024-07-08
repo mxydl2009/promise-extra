@@ -34,11 +34,26 @@ function last(fn) {
       cached.abort(); // 取消上次的异步任务;
     }
     cached = new LastTask(fn); // 调度新的异步任务;
-    return cached.exec().then((res) => {
-      cached = null;
-      return res;
-    });
+    return cached.exec().then(
+      (res) => {
+        cached = null;
+        return res;
+      },
+      (e) => {
+        if (e.name !== "abort") {
+          throw e;
+        }
+      }
+    );
   };
+}
+
+class AbortError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "abort";
+    this.message = message;
+  }
 }
 
 class LastTask {
@@ -66,7 +81,7 @@ class LastTask {
   }
 
   abort() {
-    this.reject && this.reject("abort");
+    this.reject && this.reject(new AbortError("cancel previous promise"));
   }
 }
 
