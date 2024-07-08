@@ -6,7 +6,7 @@
 /**
  * ## PromiseAllLimited
  * ### description
- * English
+ * **English**
  *
  * like Promise.all, but limited the number of the concurrent promises.
  *
@@ -16,7 +16,7 @@
  *
  * the result contains the rejected value(mostly Error) when the corresponding pending promise was rejected.
  *
- * Chinese
+ * **Chinese**
  *
  * 类似于Promise.all方法，但是会限制并发的promise数量。
  *

@@ -1,6 +1,6 @@
 {
   "name": "@mxydl2009/promise-extra",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "provide promise extra functions",
   "module": "dist/dist.mjs",
   "main": "dist/dist.cjs",
@@ -19,7 +19,8 @@
     "promise",
     "extra",
     "limited",
-    "concurrent"
+    "concurrent",
+    "last"
   ],
   "files": [
     "dist"
