@@ -65,7 +65,8 @@ let result = null;
 let index = 0;
 
 // define the original event handler
-function handler() {
+function handler(event) {
+  console.log("event", event); // original event object
   const name = index++;
   // interval should be random when async task is a web request
   const interval = 500;
@@ -77,8 +78,8 @@ const wrappedHandler = last(handler);
 
 const btnEl = document.querySelector("#btn");
 // add the wrapped event handler
-btnEl.addEventListener("click", () => {
-  wrappedHandler()
+btnEl.addEventListener("click", (e) => {
+  wrappedHandler(e)
     .then((res) => {
       result = res;
       console.log("result", result); // when click, result is task-${click times}, when quickly click btnEl 8 times, result is "task-7", because the previous 7 click are all aborted.
