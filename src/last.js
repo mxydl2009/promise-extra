@@ -29,12 +29,12 @@
  */
 function last(fn) {
   let cached = null; // 缓存最近一次调用last的Promise
-  return function () {
+  return function (...args) {
     if (cached) {
       cached.abort(); // 取消上次的异步任务;
     }
     cached = new LastTask(fn); // 调度新的异步任务;
-    return cached.exec().then(
+    return cached.exec(...args).then(
       (res) => {
         cached = null;
         return res;
@@ -64,12 +64,12 @@ class LastTask {
     this.p = null;
   }
 
-  exec() {
+  exec(...args) {
     this.p = new Promise((resolve, reject) => {
       this.resolve = resolve;
       this.reject = reject;
       this.task &&
-        this.task()
+        this.task(...args)
           .then((res) => {
             resolve(res);
           })
