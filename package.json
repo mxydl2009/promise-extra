@@ -1,6 +1,6 @@
 {
   "name": "@mxydl2009/promise-extra",
-  "version": "2.1.5",
+  "version": "2.1.6",
   "description": "provide promise extra functions",
   "module": "dist/dist.mjs",
   "main": "dist/dist.cjs",
@@ -27,6 +27,9 @@
   "files": [
     "dist"
   ],
+  "repository": {
+    "url": "https://github.com/mxydl2009/promise-extra.git"
+  },
   "publishConfig": {
     "access": "public"
   },
