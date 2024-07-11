@@ -1,14 +1,15 @@
 /**
- * @file PromiseAllLimited
- *
+ * @module limit
  */
 
 /**
- * ## PromiseAllLimited
+ * ## limit
+ * 
  * ### description
+ * 
  * **English**
  *
- * like Promise.all, but limited the number of the concurrent promises.
+ * like Promise.all, but limited the number of the concurrent promises by parameter concurrency.
  *
  * When one promise resolved, then take the next pendingPromise unless reach the limited number again.
  *
@@ -25,47 +26,40 @@
  * 所有的pending promises都resolve后（或者其中有reject），返回带着result的promise，result的元素顺序与pending promise是一一对应的，其中可能包含Error（当对应的promise被reject）。
  *
  * ### example
- * ```js
- * 
- *  function taskFactory(name, interval) {
- *    return new Promise(function (resolve) {
- *     console.log(`task ${name} has started!`);
- *       setTimeout(() => {
- *         console.log("~~~~~~~~~", `task ${name} has finished!`);
- *         resolve(`task-${name}`);
- *       }, interval);
- *     });
- *   }
+ ```js
+  function taskFactory(name, interval) {
+    return new Promise(function (resolve) {
+      console.log(`task ${name} has started!`);
+        setTimeout(() => {
+          console.log("~~~~~~~~~", `task ${name} has finished!`);
+          resolve(`task-${name}`);
+        }, interval);
+    });
+  }
+  const taskIntervals = [];
+  for (let index = 0; index < 8; index++) {
+    const interval = Math.floor(Math.random() * 1800);
+    taskIntervals.push({
+      name: `${interval}`,
+      interval,
+    });
+  }
+
+  const limited = promiseAllLimited(3);
+
+  taskIntervals.forEach((item) =>
+    limited(() => taskFactory(item.name, item.interval))
+  );
+
+  limited.run().then((res) => {
+    console.log("result", res);
+  });
+```
  *
- *   const taskIntervals = [];
- *   for (let index = 0; index < 8; index++) {
- *     const interval = Math.floor(Math.random() * 1800);
- *     taskIntervals.push({
- *       name: `${interval}`,
- *       interval,
- *     });
- *   }
-
- *   const limited = promiseAllLimited(3);
-
- *   taskIntervals.forEach((item) =>
- *     limited(() => taskFactory(item.name, item.interval))
- *   );
-
- *   limited.run().then((res) => {
- *     console.log("result", res);
- *   });
- * ```
- * 
- * 
+ * @param {number} [concurrency=6] default concurrency
+ * @returns {function} (callback: () => Promise) => undefined
  */
-/**
- *
- *
- * @param {number} [limit=6] default concurrency
- * @returns {undefined} (callback: () => Promise) => undefined
- */
-function promiseAllLimited(limit = 6) {
+function limit(concurrency = 6) {
   let pendingPromisesNum = 0;
   let promiseIndex = 0;
   // 存储promise的执行结果
@@ -85,7 +79,7 @@ function promiseAllLimited(limit = 6) {
       }
     }
     // 消费：取出pendingPromise成员进行消费
-    while (pendingPromisesNum < limit && pendingPromises.length > 0) {
+    while (pendingPromisesNum < concurrency && pendingPromises.length > 0) {
       const pendingPromiseFn = pendingPromises.shift();
       // const index = promises.indexOf(pendingPromise);
       pendingPromisesNum++;
@@ -120,4 +114,4 @@ function promiseAllLimited(limit = 6) {
   return limited;
 }
 
-export default promiseAllLimited;
+export default limit;

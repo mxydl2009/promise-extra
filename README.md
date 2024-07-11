@@ -4,14 +4,14 @@ this package is aimed at providing extra promise related methods to simplify the
 
 # Usage
 
-## promiseAllLimited method
+## limit method
 
 ### example
 
 ```js
-const { promiseAllLimited } = require("@mxydl2009/promise-extra"); // commonjs module
+const { limit } = require("@mxydl2009/promise-extra"); // commonjs module
 
-import { promisedAllLimited } from "@mxydl2009/promise-extra"; // es module
+import { limit } from "@mxydl2009/promise-extra"; // es module
 
 // async task factory
 function taskFactory(name, interval) {
@@ -33,7 +33,7 @@ for (let index = 0; index < 8; index++) {
   });
 }
 // constrain the concurrency to 3
-const limited = promiseAllLimited(3);
+const limited = limit(3);
 // register the async tasks
 taskIntervals.forEach((item) =>
   limited(() => taskFactory(item.name, item.interval))
@@ -92,13 +92,13 @@ btnEl.addEventListener("click", (e) => {
 
 # API
 
-## promiseAllLimited([limit]) ⇒ <code>undefined</code>
+## limit([concurrency]) ⇒ <code>undefined</code>
 
 **Returns**: <code>undefined</code> - (callback: () => Promise) => undefined
 
-| Param   | Type                | Default        | Description         |
-| ------- | ------------------- | -------------- | ------------------- |
-| [limit] | <code>number</code> | <code>6</code> | default concurrency |
+| Param         | Type                | Default        | Description         |
+| ------------- | ------------------- | -------------- | ------------------- |
+| [concurrency] | <code>number</code> | <code>6</code> | default concurrency |
 
 ### description
 
@@ -148,4 +148,4 @@ usually used in handling the frequently triggered async task, like the below sce
 1. 在输入框中快速输入，下拉列表展示当前输入文本的响应结果;
 2. 快速点击，展示最近点击的结果;
 
-有时候，也会使用防抖或者节流来解决类似的问题。
+**防抖或者节流可以解决类似的问题**。
