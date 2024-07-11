@@ -51,7 +51,7 @@
     "@rollup/plugin-terser": "^0.4.4",
     "babel-plugin-istanbul": "^7.0.0",
     "chai": "^4.3.7",
-    "inquirer": "^10.0.1",
+    "inquirer": "^8.0.0",
     "jsdoc": "^4.0.3",
     "jsdoc-to-markdown": "^8.0.1",
     "live-server": "^1.2.2",
