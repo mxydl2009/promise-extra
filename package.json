@@ -17,7 +17,7 @@
     "test": "mocha test/*.test.js --timeout 5000",
     "coverage": "nyc npm run test",
     "prepublishOnly": "node scripts/prepublish-check.js",
-    "postversion": "git push --tags && npm run publish",
+    "postversion": "npm run build && git push --tags && npm run publish",
     "preversion": "node scripts/prepublish-check.js"
   },
   "keywords": [
